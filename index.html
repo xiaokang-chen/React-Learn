@@ -138,8 +138,25 @@
           );
         }
         
+        // const numbers = [1,2,3,4,5];
+        // const listItems = numbers.map((item) => {
+        //   return <li>{item}</li>
+        // })
+
+        function ListItem(props){
+          const numbers = props.number;
+          const listItems = numbers.map((item) =>
+              <li>{item}</li>
+          )
+          return (
+            <ul>
+              {listItems}
+            </ul>
+          );
+        }
+
         ReactDOM.render(
-          <ActionLink />,
+          <ListItem number={[1,2,3,4,5,6]}/>,
           document.getElementById('root')
         );
         

@@ -1,0 +1,60 @@
+<!--
+ * @Author: your name
+ * @Date: 2020-04-10 23:02:27
+ * @LastEditTime: 2020-04-10 23:24:32
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \react-learn\index3.html
+ -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Hello React!</title>
+    <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        
+        class MyForm extends React.Component {
+          constructor(props){
+            super(props);
+            this.state = {text: ''};
+            this._onSubmit = this._onSubmit.bind(this);
+          }
+          _onSubmit(event){
+            alert('Your input: ' + this.state.text);
+            event.preventDefault();
+          }
+          _onChange = (event) => {
+            this.setState({
+              text: event.target.value
+            })
+          }
+
+          render(){
+            return(
+                <form onSubmit={this._onSubmit}>
+                  <label>
+                    名字：
+                    <input value={this.state.text}
+                      type="text" 
+                      onChange={this._onChange}/>
+                  </label>
+                  <input type="submit" value="提交"/>
+                </form>
+            );
+          }
+        }
+
+        ReactDOM.render(
+          <MyForm />,
+          document.getElementById('root')
+        );
+        
+    </script>
+</body>
+</html>

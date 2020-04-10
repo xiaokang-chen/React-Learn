@@ -130,20 +130,227 @@ React元素事件处理和DOM元素很相似，只是语法上有两处不同：
 
 3. 向事件处理函数传递参数
 
-有两种方式（不管函数是如何形式定义的）：
+    有两种方式（不管函数是如何形式定义的）：
 
-```html
-<!-- 如果在回调函数中用的到事件对象，对于箭头函数来说，必须显式传递e
-而对于bind方式传值，事件对象e隐式传到回调函数中 -->
-<button onClick={(e) => this.deleteRow(id, e)}>Delete Row</button>
-<button onClick={this.deleteRow.bind(this, id)}>Delete Row</button>
-```
+    ```html
+    <!-- 如果在回调函数中用的到事件对象，对于箭头函数来说，必须显式传递e
+    而对于bind方式传值，事件对象e隐式传到回调函数中 -->
+    <button onClick={(e) => this.deleteRow(id, e)}>Delete Row</button>
+    <button onClick={this.deleteRow.bind(this, id)}>Delete Row</button>
+    ```
 
 ### 1.3 条件渲染
 
+React中条件渲染和js中一样，使用if或者条件运算符（?:）。还可以使用&&，true&&expression返回expression，而false&&expression会返回false。
+一个条件渲染如下：
+
+```js
+<div>
+    {isLogin
+        ? <LoginButton onClick={} />
+        : <LoginButton onClick={} />
+    }
+</div>
+```
+
+下面的例子演示一个WaringBanner组件，根据父组件传来的props进行条件渲染：
+
+```js
+function WaringBanner(props){
+    if(!props.warn){
+        // 这里可以返回一个空视图，
+        // 这里return出去后不执行下面的return了（和js一样）
+        return null;
+    }
+
+    return (
+        <div>
+            Waring
+        </div>
+    );
+}
+
+
+class Page extends React.Component {
+    constructor(props){
+        super(props);
+        this.state = {showWaring: true};
+    }
+
+    render() {
+        return (
+            <div>
+                <WaringBanner warn={this.state.showWaring} />
+            </div>
+        );
+    }
+}
+```
+
 ### 1.4 列表 & Key
 
+可以通过jsx的语法渲染列表：
+
+```jsx
+const numbers = [1,2,3,4,5];
+const listItems = numbers.map((item) =>
+    <li>{item}</li>
+);
+
+ReactDOM.render(
+    <ul>{listItems}</ul>,
+    document.getElementById('root')
+);
+```
+
+![列表](./pic/1.png)
+
+一般情况下，需要将最后呈现的元素封装为一个组件：
+
+```js
+function ListItems(props){
+    const listItems = props.numbers.map((item) =>
+        <li>{item}</li>
+    )
+    return (
+        <ul>{listItems}</ul>
+    );
+}
+
+ReactDOM.render(
+    <ListItems numbers={numbers} />,
+    document.getElementById('root')
+);
+```
+
+如果单单这么写，在页面上显示没有问题，但是打开控制台，会发现报错：
+![id问题](./pic/2.png)
+
+<font color='red'>Key帮助React识别哪些元素改变了，进而使DOM只修改改变的部分，加快渲染速度。如果不设置key，在页面元素改变之后，DOM寻找不同的效率就会变低。</font>
+&emsp;&emsp;一个key一般设置一个字符串，并且**这个字符串在列表中是唯一的**
+
+```js
+// 使用数据中传来的id作为key
+const todoItems = todos.map((todo) =>
+    <li key={todo.id}>
+        {todo.text}
+    </li>
+)
+// 万不得已的时候，使用数据索引作为id，其实这就是React
+// 默认指定key的方式
+const todoItems = todos.map((todo, index) =>
+    <li key={index}>
+        {todo.text}
+    </li>
+)
+
+// 在列表项目顺序可能发生改变的时候，如果使用
+// index作为key，会使得性能变差，还会引起组件状态问题
+```
+
+Key的总结：
+
+- key只会传递给React，不会传递给子组件
+- key只需要在当前数组中唯一即可，而不需要在整个组件内唯一
+- key一般都设置在map方法内的数组元素上
+
 ### 1.5 表单
+
+通常表单需要与用户交流的输入框。在react中，通常需要在提交时获取输入的内容，这就用到了**受控组件**。
+
+#### 1.5.1 受控组件
+
+html中表单输入组件（如input、textarea、select）会自己维护一个state，并根据用户输入进行更新。在React中，通过state属性，并且setState()来更新。如果在react中使用html元素，就需要统一状态，将react中的state作为唯一接收用户输入的属性。被react以这种方式控制的表单输入元素称为**受控元素**
+
+```js
+class NameForm extends React.Component {
+    constructor(props){
+        super(props);
+        this.state = {value: ''};
+    }
+
+    handleChange = (event) => {
+        // 通过默认传入的合成事件获取事件目标的value值
+        // 详情查看MDN的Event API
+        this.setState({value: event.target.value});
+    }
+
+    handleSubmit = (event) => {
+        alert('提交的名字：' + this.state.value);
+        // 阻止表单提交后的页面跳转事件等
+        event.preventDefault();
+    }
+
+    render() {
+        return (
+            <form onSubmit={this.handleSubmit}>
+                <label>
+                    名字：
+                    <input
+                        type="name"
+                        value={this.state.value}
+                        onChange={this.handleChange}
+                    />
+                </label>
+                <input type="submit" value="提交"/>
+            </form>
+        );
+    }
+}
+```
+
+#### 1.5.2 textarea标签
+
+HTML中，textarea通过其子元素定义其文本：
+
+```html
+<!-- 开头和末尾标签都不能省略，这点和React不同 -->
+<textarea>some Text</textarea>
+```
+
+而在React中，和input一样，也通过state去获取对应的value属性：
+
+```js
+class TextArea extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            value: 'Some text'
+        }
+    }
+
+    handleChange = (event) => {
+        this.setState({
+            value: event.target.value
+        })
+    }
+
+    handleSubmit = (event) => {
+        ...
+    }
+
+    render() {
+        return (
+            <form onSubmit={this.handleSubmit}>
+                ...
+                <textarea value={this.state.value}
+                    onChange={this.handleChange} />
+                ...
+            </form>
+        );
+    }
+}
+```
+
+#### 1.5.3 select标签
+
+
+### 1.6 状态提升
+
+### 1.7 组合 vs 继承
+
+### 1.8 React哲学
+
 
 ## 二、高级指引
 
