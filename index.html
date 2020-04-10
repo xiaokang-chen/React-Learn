@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Hello React!</title>
+    <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        function formatName(user) {
+            return user.firstName + ' ' + user.lastName;
+        }
+        function getGreeting(user) {
+            if(user){
+                return <h1>Hello, {formatName(user)}!</h1>;
+            }
+            return <h1>Hello, Stranger.</h1>;
+        }
+        const user = {
+            firstName: 'chen',
+            lastName: 'xiaokang'   
+        };
+        const element1 = (
+            <h1>
+                Hello, {formatName(user)}
+            </h1>
+        );
+        
+        // 定义一个函数组件
+        function Welcome(props) {
+            return <h1>Hello, {props.name}</h1>;
+        }
+        // 定义一个“父组件”
+        function App() {
+            return (
+                <div>
+                    <Welcome name="Sara" />
+                    <Welcome name="Mike" />
+                    <Welcome name="Lucy" />
+                </div>
+            );
+        }
+
+        function Comment(props) {
+            return (
+                <div className="Comment">
+                <div className="UserInfo">
+                    <img className="Avatar"
+                    src={props.author.avatarUrl}
+                    alt={props.author.name}
+                    />
+                    <div className="UserInfo-name">
+                    {props.author.name}
+                    </div>
+                </div>
+                <div className="Comment-text">
+                    {props.text}
+                </div>
+                <div className="Comment-date">
+                    {formatDate(props.date)}
+                </div>
+                </div>
+            );
+        }
+
+        // 可以将element看作“构造函数的实例化对象”
+        const element = <Welcome name="Sara" />
+        const app = <App/>
+
+        // 函数组件改成类组件
+        // function Clock(props) {
+        //   return (
+        //     <div>
+        //       <h1>Hello, World!</h1>
+        //       <h2>It is {props.date.toLocaleTimeString()}.</h2>
+        //     </div>
+        //   );
+        // }
+
+        // date每隔1s都更新一次
+        class Clock extends React.Component {
+          constructor(props) {
+            super(props);
+            this.state = {date: new Date()}
+          }
+
+          componentDidMount() {
+            this.timerId = setInterval(
+              () => this.tick(),
+              1000
+            );
+          }
+
+          componentWillUnmount() {
+            clearInterval(this.timerId);
+          }
+
+          tick() {
+            this.setState({
+              date: new Date()
+            });
+          }
+
+          render() {
+            return (
+              <div>
+                <h1>Hello, World!</h1>
+                <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
+              </div>
+            );
+          }
+        }
+
+        function App() {
+          return (
+            <div>
+              <Clock />
+              <Clock />
+              <Clock />
+            </div>
+          );
+        }
+
+        function ActionLink() {
+          function handleClick(e) {
+            // 事件阻止发生
+            e.preventDefault();
+            console.log('The link was clicked.');
+          }
+
+          return (
+            <a href="https://www.baidu.com" onClick={handleClick}>
+              Click me
+            </a>
+          );
+        }
+        
+        ReactDOM.render(
+          <ActionLink />,
+          document.getElementById('root')
+        );
+        
+    </script>
+</body>
+</html>
